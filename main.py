@@ -17,7 +17,7 @@ def main():
     setup_logging()
     app = QApplication(sys.argv)
 
-    model = PlayerModel()
+    model = TestModel()
     view = MainWindow()
     controller = MainController(model, view)
 

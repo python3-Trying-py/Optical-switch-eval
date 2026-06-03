@@ -1,0 +1,9 @@
+23:59:23 [DEBUG] pyvisa: No visa library specified, trying to find alternatives.
+23:59:23 [DEBUG] pyvisa: Environment variable PYVISA_LIBRARY is unset.
+23:59:23 [DEBUG] pyvisa: No user defined configuration
+23:59:23 [DEBUG] pyvisa: Automatically found library files: [None, None, None, None, None]
+23:59:23 [DEBUG] pyvisa: No user defined library files
+23:59:23 [DEBUG] pyvisa: Did not find IVI binary
+23:59:23 [DEBUG] pyvisa: Did not find pyvisa-py package
+23:59:23 [INFO] app.models.test_model: Failed to connect to OPM
+Error: Could not locate a VISA implementation. Install either the IVI binary or pyvisa-py.

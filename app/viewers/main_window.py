@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QGridLayout, QWidget, QLabel
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,25 +16,20 @@ class MainWindow(QMainWindow):
         #Inputs
         '''Needs defaults
         - Payton 06/01/2026'''
-        OPM_path: QLineEdit = QLineEdit()
-        OPM_confirm: QPushButton = QPushButton("Confirm")
+        self.OPM_path: QLineEdit = QLineEdit("USB0::0x1313::0x8076::M01217675::0::INSTR")
+        self.OPM_confirm: QPushButton = QPushButton("Confirm")
         
-        switch1_path: QLineEdit = QLineEdit()
-        switch1_confirm: QPushButton = QPushButton("Confirm")
-
-        switch2_path: QLineEdit = QLineEdit()
-        switch2_confirm: QPushButton = QPushButton("Confirm")
-
-        shelf_path: QLineEdit = QLineEdit()
-        shelf_confirm: QPushButton = QPushButton("Confirm")
+        self.switch_path: QLineEdit = QLineEdit()
+        self.switch_confirm: QPushButton = QPushButton("Confirm")
 
         #Operation
-        next_channel: QPushButton = QPushButton(">>")
-        prev_channel: QPushButton = QPushButton("<<")
-        crnt_channel: QLabel = QLabel("X-XX")
+        self.next_channel: QPushButton = QPushButton(">>")
+        self.prev_channel: QPushButton = QPushButton("<<")
+        self.crnt_channel: QLabel = QLabel("X-XX")
+        self.read_power: QPushButton = QPushButton("Read Power")
         
-        #data
-        optical_power: QLabel = QLabel("Optical Power: 0")
+        #Output
+        self.output_box: QTextEdit = QTextEdit(readOnly = True)
 
 
         """
@@ -42,20 +37,17 @@ class MainWindow(QMainWindow):
         """
         master_layout: QGridLayout = QGridLayout()
         #Inputs
-        master_layout.addWidget(OPM_path, 0, 0, 1, 2)
-        master_layout.addWidget(OPM_confirm, 0, 2)
-        master_layout.addWidget(switch1_path, 1, 0, 1, 2)
-        master_layout.addWidget(switch1_confirm, 1, 2)
-        master_layout.addWidget(switch2_path, 2, 0, 1, 2)
-        master_layout.addWidget(switch2_confirm, 2, 2)
-        master_layout.addWidget(shelf_path, 3, 0, 1, 2)
-        master_layout.addWidget(shelf_confirm, 3, 2)
+        master_layout.addWidget(self.OPM_path, 0, 0, 1, 2)
+        master_layout.addWidget(self.OPM_confirm, 0, 2)
+        master_layout.addWidget(self.switch_path, 1, 0, 1, 2)
+        master_layout.addWidget(self.switch_confirm, 1, 2)
         #Operation
-        master_layout.addWidget(prev_channel,4,0)
-        master_layout.addWidget(crnt_channel,4,1)
-        master_layout.addWidget(next_channel,4,2)
+        master_layout.addWidget(self.prev_channel,2,0)
+        master_layout.addWidget(self.crnt_channel,2,1)
+        master_layout.addWidget(self.next_channel,2,2)
+        master_layout.addWidget(self.read_power,3,1)
         #data
-        master_layout.addWidget(optical_power,5,1)
+        master_layout.addWidget(self.output_box,4,1)
 
         """
         Slot everything into the GUI

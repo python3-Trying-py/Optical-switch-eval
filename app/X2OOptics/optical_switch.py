@@ -10,6 +10,7 @@ class Switch():
     SWITCH_SLEEP_SELECT = None
 
     def __init__(self, dev_path: str, num_of_chans: int) -> None:
+        
         self.ser = serial.Serial(
                 port = dev_path,
                 baudrate=9600,
@@ -19,6 +20,7 @@ class Switch():
                 timeout = 1
             )
         
+        self.path = dev_path
         self.current_chan = None
 
         self.switch_type = num_of_chans
@@ -66,6 +68,9 @@ class Switch():
         Retrieves current channel
         """
         return self.current_chan
+    
+    def __str__(self):
+        return f"Switch {self.ser}"
 
 if __name__ == "__main__":
        devs = [

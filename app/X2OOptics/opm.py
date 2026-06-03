@@ -1,13 +1,17 @@
 import pyvisa
 import math
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class OPM:
     def __init__(self, resource_string: str, avg_count=1000) -> None:
         self.connected = False  # initialize
-        print("Opening resource:", resource_string)
+        logger.info(f"Opening resource: {resource_string}")
 
         self.rm = pyvisa.ResourceManager()
-        print("Available:", self.rm.list_resources())
+        logger.info(f"Available: {self.rm.list_resources()}")
 
         self.instr = self.rm.open_resource(resource_string)
 
@@ -35,4 +39,7 @@ class OPM:
         """
         self.instr.close()
         self.rm.close()
+    
+    def __str__(self):
+        return f"Optical Power Meter {self.instr}"
 

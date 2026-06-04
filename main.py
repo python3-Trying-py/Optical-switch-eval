@@ -5,7 +5,7 @@ from app.models.test_model import TestModel
 from app.viewers.main_window import MainWindow
 from app.controllers.main_controller import MainController
 
-def setup_logging():
+def setup_logging() -> None:
     logging.basicConfig(
         filename = 'Optical_switch_test.log',
         level=logging.DEBUG,
@@ -13,7 +13,7 @@ def setup_logging():
         datefmt="%H:%M:%S",
         )
 
-def main():
+def main() -> None:
     setup_logging()
     app = QApplication(sys.argv)
 

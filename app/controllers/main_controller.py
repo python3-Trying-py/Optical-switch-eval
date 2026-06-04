@@ -1,9 +1,23 @@
 from typing import Callable
 from functools import wraps
+from PyQt6.QtCore import QObject, QThread, pyqtSignal
+from typing import Callable
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+class Worker(QObject):
+
+    finished = pyqtSignal()
+
+    def __init__(self, func: Callable[[], None]) -> None:
+        super().__init__()
+        self.func = func
+
+    def run(self) -> None:
+        self.func()
+        self.finished.emit()
 
 class MainController:
     def __init__(self, model, viewers) -> None:
@@ -18,6 +32,7 @@ class MainController:
         self.viewers.read_power.clicked.connect(self.display_reading)
         self.viewers.prev_channel.clicked.connect(self.prev_channel)
         self.viewers.next_channel.clicked.connect(self.next_channel)
+        self.viewers.save_data.clicked.connect(self.save_results)
 
     def connect_opm(self) -> None:
         self.model.connect_OPM(self.viewers.OPM_path.text())
@@ -43,21 +58,39 @@ class MainController:
         """
         Decorator that temporily disables interaction with GUI elements related to switching channels
         """
-        logger.info("Decorator entered")
         @wraps(func)
         def wrapper(self) -> None:
-            logger.info("wrapper entered")
+            logger.debug("wrapper entered")
             self.disable_interaction()
-            try:
-                func(self)
-            finally:
-                self.enable_interaction()
-        logger.info("wrapper left")
+
+            #Thread object allows for time.sleep()s to function within the QT event loop
+            #If not done this way then the program will either brick or fail to disable and enable gui elements properly, depending on implementation
+            thread = QThread()
+            #Worker expects a function with no args but we need self, so run the function with self inside an anonymous function(which will then have no args), and pass that to the worker
+            worker = Worker(lambda: func(self))
+            worker.moveToThread(thread)
+
+            thread.started.connect(worker.run)
+            worker.finished.connect(thread.quit)
+            #Dumps the worker and thread once the QT event loop has moved on from this thread, frees up memory(I think, I'm a physics student  not a compsci student)
+            worker.finished.connect(worker.deleteLater)
+            thread.finished.connect(thread.deleteLater)
+            worker.finished.connect(self.enable_interaction)
+
+            self._thread = thread
+            self._worker = worker
+
+            thread.start()
+
+            logger.debug("leaving wrapper")
+
         return wrapper
 
     def connect_switch(self) -> None:
         self.model.connect_switch(self.viewers.switch_path.text())
         self.viewers.crnt_channel.change_channel(1)
+        self.model.channel = 1
+        self.model.select_channel(1)
         self.viewers.show_popup_box("Please set a switch label.")
 
         if self.model.switch_loaded == True:
@@ -79,7 +112,7 @@ class MainController:
         """
         if self.model.channel == 1:
             self.viewers.output_box.insertPlainText("Switching to new optical switch\n")
-            self.viewers.show_popup_box("Please set a new switch label.")
+            self.viewers.show_popup_box("Please connect new switch.")
             self.model.channel = 43
         else:
             self.model.channel = self.model.channel - 1
@@ -96,7 +129,7 @@ class MainController:
         """
         if self.model.channel == 43:
             self.viewers.output_box.insertPlainText("Switching to new optical switch\n")
-            self.viewers.show_popup_box("Please set a new switch label.")
+            self.viewers.show_popup_box("Please connect new switch.")
             self.model.channel = 1
         else:
             self.model.channel = self.model.channel + 1
@@ -114,3 +147,10 @@ class MainController:
         power: float = self.model.read_optical_power(self.viewers.switch_path.text(), channel[0], channel[1])
 
         self.viewers.output_box.insertPlainText(f"Switch channel {channel[0]}-{channel[1]}: {power} dBm\n")
+
+    def save_results(self) -> None:
+        logger.info("Saving results")
+        
+        self.model.save_results()
+
+        logger.info("Results saved")

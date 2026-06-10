@@ -1,5 +1,6 @@
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QHBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QHBoxLayout, QMessageBox, QComboBox, QTabWidget
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -32,18 +33,26 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
-        self.setWindowTitle("My App")
+        self.setWindowTitle("Optical Switch Evaluation")
 
+        """
+        Create Tabs
+        """
+        self.tabs = QTabWidget()
+        self.eval_tab = QWidget()
+        self.manage_devices_tab = QWidget()
+
+        '''Evaluation Tab'''
         """
         Create all the widgets
         """
         #Inputs
         self.OPM_label = QLabel("OPM Connection:")
-        self.OPM_path = QLineEdit("USB0::0x1313::0x8076::M01217675::0::INSTR")
+        self.OPM_path = QComboBox()
         self.OPM_confirm = QPushButton("Confirm")
         
         self.switch_label = QLabel("Switch Connection:")
-        self.switch_path= QLineEdit("USB0::0x2727::0x8076::M01217456::0::3")
+        self.switch_path = QComboBox()
         self.switch_confirm = QPushButton("Confirm")
 
         #Operation
@@ -68,30 +77,46 @@ class MainWindow(QMainWindow):
         """
         Create and organize layout
         """
-        master_layout: QGridLayout = QGridLayout()
+        eval_master_layout = QGridLayout()
         #Inputs
-        master_layout.addWidget(self.OPM_label, 0, 0)
-        master_layout.addWidget(self.OPM_path, 0, 1)
-        master_layout.addWidget(self.OPM_confirm, 0, 2)
-        master_layout.addWidget(self.switch_label, 1, 0)
-        master_layout.addWidget(self.switch_path, 1, 1)
-        master_layout.addWidget(self.switch_confirm, 1, 2)
+        eval_master_layout.addWidget(self.OPM_label, 0, 0)
+        eval_master_layout.addWidget(self.OPM_path, 0, 1)
+        eval_master_layout.addWidget(self.OPM_confirm, 0, 2)
+        eval_master_layout.addWidget(self.switch_label, 1, 0)
+        eval_master_layout.addWidget(self.switch_path, 1, 1)
+        eval_master_layout.addWidget(self.switch_confirm, 1, 2)
         #Operation
-        master_layout.addWidget(self.prev_channel,2,0)
-        master_layout.addWidget(self.crnt_channel,2,1)
-        master_layout.addWidget(self.next_channel,2,2)
-        master_layout.addWidget(self.read_power,3,1)
+        eval_master_layout.addWidget(self.prev_channel,2,0)
+        eval_master_layout.addWidget(self.crnt_channel,2,1)
+        eval_master_layout.addWidget(self.next_channel,2,2)
+        eval_master_layout.addWidget(self.read_power,3,1)
         #Data
-        master_layout.addWidget(self.save_data,4,1)
-        master_layout.addWidget(self.output_box,5,0,1,3)
+        eval_master_layout.addWidget(self.save_data,4,1)
+        eval_master_layout.addWidget(self.output_box,5,0,1,3)
+
+        self.eval_tab.setLayout(eval_master_layout)
+
+        '''Manger Devices Tab'''
+        """
+        Create all Widgets
+        """
+        placeholder = QLabel("In development")
+
+        """
+        Create and organize layout
+        """
+        manager_master_layout = QGridLayout()
+        manager_master_layout.addWidget(placeholder)
 
         """
         Slot everything into the GUI
         """
+
+        self.tabs.addTab(self.eval_tab, "Evaluation")
+        self.tabs.addTab(self.manage_devices_tab, "Manage Devices")
+
         # Set the central widget of the Window.
-        central_widget = QWidget()
-        central_widget.setLayout(master_layout)
-        self.setCentralWidget(central_widget)
+        self.setCentralWidget(self.tabs)
 
     def show_popup_box(self, message: str, title: str = "Notice", icon: str = "Info", parent = None):
         """

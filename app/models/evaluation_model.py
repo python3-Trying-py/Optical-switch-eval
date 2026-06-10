@@ -2,12 +2,12 @@ from app.X2OOptics.optical_switch import Switch
 from app.X2OOptics.opm import OPM
 from app.X2OOptics.shelf_manager import ShelfManager
 
-from app.X2OOptics.opm import OPM
-from app.X2OOptics.optical_switch import Switch
+#from app.X2OOptics.opm import OPM
+#from app.X2OOptics.optical_switch import Switch
 
 #Test cases
-#from app.X2OOptics.mock_opm import mock_OPM as OPM
-#from app.X2OOptics.mock_optical_switch import mock_Switch as Switch
+from app.X2OOptics.mock_opm import mock_OPM as OPM
+from app.X2OOptics.mock_optical_switch import mock_Switch as Switch
 
 import csv
 from datetime import datetime

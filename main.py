@@ -2,6 +2,7 @@ import logging
 import sys
 from PyQt6.QtWidgets import QApplication
 from app.models.evaluation_model import EvalModel
+from app.models.background_model import BackgroundModel
 from app.viewers.main_window import MainWindow
 from app.controllers.main_controller import MainController
 
@@ -18,9 +19,10 @@ def main() -> None:
     setup_logging()
     app = QApplication(sys.argv)
 
-    model = EvalModel()
+    eval_model = EvalModel()
+    background_model = BackgroundModel()
     view = MainWindow()
-    controller = MainController(model, view)
+    controller = MainController(eval_model, background_model, view)
 
     view.show()
     sys.exit(app.exec())

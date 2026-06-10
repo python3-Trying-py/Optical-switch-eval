@@ -13,6 +13,7 @@ Optical-Switch-Eval/
 |   |   └── main_controller.py
 |   ├── models/
 |   |   ├── __init__.py
+|   |   ├── background_model.py
 |   |   └── evaluation_model.py
 |   ├── viewers/
 |   |   ├── __init__.py
@@ -25,6 +26,7 @@ Optical-Switch-Eval/
 |       ├── optical_switch.py
 |       └── other...
 ├── main.py
+├── devices.csv
 └── ReadMe.md
 ```
 
@@ -32,13 +34,23 @@ Optical-Switch-Eval/
 Controllers contains the main controller, which bridges the gap between the GUI and the logic. main_controller.py should only take inputs from the GUI and pass them along to the model. 
 
 ### models
-Models contains all the logic related components of the program. evaluation_model contains the opm and optical switch objects and is responsible for interacting with them.
+Models contains all the logic related components of the program. evaluation_model contains the opm and optical switch objects and is responsible for interacting with them. background_model contains the logic object responsible for handling backend operations not related to evaluation(e.g. managing lists of saved devices)
 
 ### viewers
 Viewers contains all GUI elements. It is simply responsible for displaying elements of the GUI and defining and GUI only interactions.
 
 ### X2OOptics
 X2OOptics is a psuedo-custom package for the program which contains the classes needed for interacting with the hardware. Only 2 files are currently used in the program but the additional files are included for future use, if needed.
+
+### Misc.
+## main.py
+This file initialize the viewer, models, and controller, creates the logger, and starts up the app.
+
+## devices.csv
+This csv file stores the list of saved devices.
+
+## ReadMe.md
+What you are reading!
 
 ## Operation
 Upon startup the user will ahve to enter a connection path for the OPM and the optical switch. Once this is done a label must be provided and then collection of power can begin. When switching to different channels there is a hardware delay as the channel is physical switched, during this time the GUI is disabled to prevent any hardware errors due to bad user interaction. Once all data is collected, the "save data" button will save the collected data to a csv file named **optical_switch_powers_YYYYMMDD_HHMMSS.csv**, under Optical-Switch-Eval.

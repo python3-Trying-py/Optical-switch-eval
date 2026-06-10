@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QHBoxLayout, QMessageBox, QComboBox, QTabWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QHBoxLayout, QMessageBox, QComboBox, QTabWidget, QTableView
 
 import logging
 
@@ -100,13 +100,15 @@ class MainWindow(QMainWindow):
         """
         Create all Widgets
         """
-        placeholder = QLabel("In development")
+        self.saved_OPM = QTableView()
+        self.saved_switch = QTableView()
 
         """
         Create and organize layout
         """
         manager_master_layout = QGridLayout()
-        manager_master_layout.addWidget(placeholder)
+        manager_master_layout.addWidget(self.saved_OPM,0,1)
+        manager_master_layout.addWidget(self.saved_switch,0,1)
 
         """
         Slot everything into the GUI

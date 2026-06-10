@@ -25,7 +25,11 @@ class MainController:
         self.bg_model = background_model
         self.viewers = viewers
 
+        self.start_up()
         self.connect_signals()
+
+    def start_up(self) -> None:
+        self.viewers.saved_OPM.setModel(self.bg_model.get_column_df("OPM"))
 
     def connect_signals(self) -> None:
         self.viewers.OPM_confirm.clicked.connect(self.connect_opm)
@@ -73,7 +77,7 @@ class MainController:
 
             thread.started.connect(worker.run)
             worker.finished.connect(thread.quit)
-            #Dumps the worker and thread once the QT event loop has moved on from this thread, frees up memory(I think, I'm a physics student  not a compsci student)
+            #Dumps the worker and thread once the QT event loop has moved on from this thread, frees up memory(I think, I'm a physics student not a compsci student)
             worker.finished.connect(worker.deleteLater)
             thread.finished.connect(thread.deleteLater)
             worker.finished.connect(self.enable_interaction)

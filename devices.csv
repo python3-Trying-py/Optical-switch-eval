@@ -1,2 +1,6 @@
 OPM,Switch
 USB0::0x2727::0x8076::M01217456::0::3,/dev/serial/by-id/usbEXAMPLE-port0
+test::opm::1,test/switch/1
+test::opm::2,test/switch/2
+test::opm::3,test/switch/3
+test::opm::4,test/switch/4

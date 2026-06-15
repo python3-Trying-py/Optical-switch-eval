@@ -67,6 +67,7 @@ class MainWindow(QMainWindow):
         self.read_power.setEnabled(False)
         
         #Data
+        self.file_name = QLineEdit()
         self.save_data = QPushButton("Save Data")
         self.output_box = QTextEdit(readOnly = True)
 
@@ -91,6 +92,7 @@ class MainWindow(QMainWindow):
         eval_master_layout.addWidget(self.next_channel,2,2)
         eval_master_layout.addWidget(self.read_power,3,1)
         #Data
+        eval_master_layout.addWidget(self.file_name,4,0)
         eval_master_layout.addWidget(self.save_data,4,1)
         eval_master_layout.addWidget(self.output_box,5,0,1,3)
 
@@ -107,8 +109,10 @@ class MainWindow(QMainWindow):
         Create and organize layout
         """
         manager_master_layout = QGridLayout()
-        manager_master_layout.addWidget(self.saved_OPM,0,1)
-        manager_master_layout.addWidget(self.saved_switch,0,1)
+        manager_master_layout.addWidget(self.saved_OPM,0,0)
+        manager_master_layout.addWidget(self.saved_switch,1,0)
+
+        self.manage_devices_tab.setLayout(manager_master_layout)
 
         """
         Slot everything into the GUI

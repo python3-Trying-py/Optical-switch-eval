@@ -54,11 +54,12 @@ class EvalModel:
         self.data.append([switch_path, switch_label, channel, self.opm.read_power_dbm()])
         return self.opm.read_power_dbm()
     
-    def save_results(self) -> None:
-        now = datetime.now()
-        formatted_time = now.strftime("%Y%m%d_%H%M%S")
+    def save_results(self, file_name: str) -> None:
+        if not file_name:
+            now = datetime.now()
+            file_name = now.strftime("%Y%m%d_%H%M%S")
 
-        with open(f"optical_switch_powers_{formatted_time}.csv", "w", newline="", encoding="utf-8") as file:
+        with open(f"optical_switch_powers_{file_name}.csv", "w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             
             # Write all rows at once

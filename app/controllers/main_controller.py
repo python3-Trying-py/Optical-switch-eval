@@ -1,6 +1,7 @@
 from typing import Callable
 from functools import wraps
 from PyQt6.QtCore import QObject, QThread, pyqtSignal
+from PyQt6.QtWidgets import QComboBox
 from typing import Callable
 
 import logging
@@ -29,7 +30,15 @@ class MainController:
         self.connect_signals()
 
     def start_up(self) -> None:
-        self.viewers.saved_OPM.setModel(self.bg_model.get_column_df("OPM"))
+        self.viewers.saved_OPM.setModel(self.bg_model.get_column_model("OPM"))
+        self.viewers.saved_switch.setModel(self.bg_model.get_column_model("Switch"))
+
+        self.populate_combobox(self.bg_model.get_column_list("OPM"), self.viewers.OPM_path)
+        self.populate_combobox(self.bg_model.get_column_list("Switch"), self.viewers.switch_path)
+    
+    def populate_combobox(self, items: list, combobox: QComboBox) -> None:
+        for item in items:
+            combobox.addItem(item)
 
     def connect_signals(self) -> None:
         self.viewers.OPM_confirm.clicked.connect(self.connect_opm)
@@ -40,7 +49,7 @@ class MainController:
         self.viewers.save_data.clicked.connect(self.save_results)
 
     def connect_opm(self) -> None:
-        self.eval_model.connect_OPM(self.viewers.OPM_path.text())
+        self.eval_model.connect_OPM(self.viewers.OPM_path.currentText())
 
     def disable_interaction(self) -> None:
         self.viewers.next_channel.setEnabled(False)
@@ -92,7 +101,7 @@ class MainController:
         return wrapper
 
     def connect_switch(self) -> None:
-        self.eval_model.connect_switch(self.viewers.switch_path.text())
+        self.eval_model.connect_switch(self.viewers.switch_path.currentText())
         self.viewers.crnt_channel.change_channel(1)
         self.eval_model.channel = 1
         self.eval_model.select_channel(1)
@@ -156,6 +165,6 @@ class MainController:
     def save_results(self) -> None:
         logger.info("Saving results")
         
-        self.eval_model.save_results()
+        self.eval_model.save_results(self.viewers.file_name.text())
 
         logger.info("Results saved")

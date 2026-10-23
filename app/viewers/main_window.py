@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QHBoxLayout, QMessageBox, QComboBox, QTabWidget, QTableView
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QGridLayout, QWidget, QLabel, QTextEdit, QHBoxLayout, QMessageBox, QComboBox, QTabWidget, QTableView, QTableWidget
 
 import logging
 
@@ -102,8 +102,13 @@ class MainWindow(QMainWindow):
         """
         Create all Widgets
         """
-        self.saved_OPM = QTableView()
-        self.saved_switch = QTableView()
+        self.saved_OPM = QTableWidget()
+        self.saved_switch = QTableWidget()
+
+        self.saved_OPM.insertColumn(0)
+        self.saved_OPM.insertColumn(1)
+        self.saved_switch.insertColumn(0)
+        self.saved_switch.insertColumn(1)
 
         """
         Create and organize layout

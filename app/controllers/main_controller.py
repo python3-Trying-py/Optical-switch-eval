@@ -29,9 +29,71 @@ class MainController:
         self.start_up()
         self.connect_signals()
 
+    @staticmethod
+    def QThreaded(func: Callable) -> Callable:
+        """
+        Decorator that allows a function to be performed within a QThread
+        """
+        @wraps(func)
+        def wrapper(self, *args, **kwargs) -> None:
+            logger.debug("QThreaded: wrapper entered")
+            thread = QThread()
+            worker = Worker(lambda: func(self, *args, **kwargs))
+            worker.moveToThread(thread)
+
+            thread.started.connect(worker.run)
+            worker.finished.connect(thread.quit)
+            #Dumps the worker and thread once the QT event loop has moved on from this thread, frees up memory(I think, I'm a physics student not a compsci student)
+            worker.finished.connect(worker.deleteLater)
+            thread.finished.connect(thread.deleteLater)
+
+            self._thread = thread
+            self._worker = worker
+
+            thread.start()
+
+            logger.debug("QThreaded: leaving wrapper")
+
+        return wrapper
+
+
+    @staticmethod
+    def pause_interaction(func: Callable[[], None]) -> Callable[[], None]:
+        """
+        Decorator that temporily disables interaction with GUI elements related to switching channels
+        """
+        @wraps(func)
+        def wrapper(self) -> None:
+            logger.debug("pause_interaction: wrapper entered")
+            self.disable_interaction()
+
+            #Thread object allows for time.sleep()s to function within the QT event loop
+            #If not done this way then the program will either brick or fail to disable and enable gui elements properly, depending on implementation
+            thread = QThread()
+            #Worker expects a function with no args but we need self, so run the function with self inside an anonymous function(which will then have no args), and pass that to the worker
+            worker = Worker(lambda: func(self))
+            worker.moveToThread(thread)
+
+            thread.started.connect(worker.run)
+            worker.finished.connect(thread.quit)
+            #Dumps the worker and thread once the QT event loop has moved on from this thread, frees up memory(I think, I'm a physics student not a compsci student)
+            worker.finished.connect(worker.deleteLater)
+            thread.finished.connect(thread.deleteLater)
+            worker.finished.connect(self.enable_interaction)
+
+            self._thread = thread
+            self._worker = worker
+
+            thread.start()
+
+            logger.debug("pause_interaction: leaving wrapper")
+
+        return wrapper
+
+    @QThreaded
     def start_up(self) -> None:
-        self.viewers.saved_OPM.setModel(self.bg_model.get_column_model("OPM"))
-        self.viewers.saved_switch.setModel(self.bg_model.get_column_model("Switch"))
+        self.bg_model.populate_device_table(self.viewers.saved_OPM, "OPM")
+        self.bg_model.populate_device_table(self.viewers.saved_switch, "Switch")
 
         self.populate_combobox(self.bg_model.get_column_list("OPM"), self.viewers.OPM_path)
         self.populate_combobox(self.bg_model.get_column_list("Switch"), self.viewers.switch_path)
@@ -66,39 +128,6 @@ class MainController:
         self.viewers.read_power.setEnabled(True)
         self.viewers.save_data.setEnabled(True)
         self.viewers.output_box.setEnabled(True)
-
-    @staticmethod
-    def pause_interaction(func: Callable[[], None]) -> Callable[[], None]:
-        """
-        Decorator that temporily disables interaction with GUI elements related to switching channels
-        """
-        @wraps(func)
-        def wrapper(self) -> None:
-            logger.debug("wrapper entered")
-            self.disable_interaction()
-
-            #Thread object allows for time.sleep()s to function within the QT event loop
-            #If not done this way then the program will either brick or fail to disable and enable gui elements properly, depending on implementation
-            thread = QThread()
-            #Worker expects a function with no args but we need self, so run the function with self inside an anonymous function(which will then have no args), and pass that to the worker
-            worker = Worker(lambda: func(self))
-            worker.moveToThread(thread)
-
-            thread.started.connect(worker.run)
-            worker.finished.connect(thread.quit)
-            #Dumps the worker and thread once the QT event loop has moved on from this thread, frees up memory(I think, I'm a physics student not a compsci student)
-            worker.finished.connect(worker.deleteLater)
-            thread.finished.connect(thread.deleteLater)
-            worker.finished.connect(self.enable_interaction)
-
-            self._thread = thread
-            self._worker = worker
-
-            thread.start()
-
-            logger.debug("leaving wrapper")
-
-        return wrapper
 
     def connect_switch(self) -> None:
         self.eval_model.connect_switch(self.viewers.switch_path.currentText())
